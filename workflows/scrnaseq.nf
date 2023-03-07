@@ -16,7 +16,6 @@ def checkPathParamList = [
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     CONFIG FILES
@@ -63,6 +62,20 @@ include { MULTIQC } from "../modules/nf-core/multiqc/main"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+process BuildSampleSheet {
+
+    input:
+    path(fastqs)
+
+    output:
+    path("*.csv")
+
+    script:
+    """
+    make_samplesheet.py --strandedness $params.strandedness --fastqs ${fastqs.join(" ")} 
+    """
+}
+
 // Info required for completion email and summary
 // TODO: Are this channels still necessary?
 ch_output_docs = file("$projectDir/docs/output.md", checkIfExists: true)
@@ -70,7 +83,9 @@ ch_output_docs_images = file("$projectDir/docs/images/", checkIfExists: true)
 (protocol, chemistry, other_parameters) = WorkflowScrnaseq.formatProtocol(params.protocol, params.aligner)
 
 // general input and params
-ch_input = file(params.input)
+fastqs_ch = Channel.fromList(params.reads.split(','))
+
+ch_input = BuildSampleSheet(fastqs_ch)
 ch_genome_fasta = params.fasta ? file(params.fasta) : []
 ch_gtf = params.gtf ? file(params.gtf) : []
 ch_transcript_fasta = params.transcript_fasta ? file(params.transcript_fasta): []

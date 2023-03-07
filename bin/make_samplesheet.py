@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 
 import argparse
+import os
 
 class Sample:
 
     @classmethod
     def get_name(fastq):
         if '_R1' in fastq:
-            return fastq.split('_R1')[0]
+            return os.path.basename(fastq).split('_R1')[0]
         elif '_R2' in fastq:
-            return fastq.split('_R2')[0]
+            return os.path.basename(fastq).split('_R2')[0]
         raise ValueError('Cannot get sample name from %s' % fastq)
 
     def __init__(self, name):

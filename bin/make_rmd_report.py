@@ -69,6 +69,6 @@ if args.debug:
     print(deployproc.stderr.decode())
 url = get_deployment_url(deployproc.stdout.decode())
 if not url:
-    raise RuntimeError('Deployment failed for %s %s' % (run, sample))
+    raise RuntimeError('Deployment failed for %s' % args.runid)
 else:
     print("Report deployed to %s" % url)

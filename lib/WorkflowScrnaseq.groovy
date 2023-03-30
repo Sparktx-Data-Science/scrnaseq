@@ -12,11 +12,6 @@ class WorkflowScrnaseq {
     public static void initialise(params, log) {
         genomeExists(params, log)
 
-        if (!params.input) {
-            log.error "Please provide an input samplesheet with --input"
-            System.exit(1)
-        }
-
         if (!params.fasta) {
             log.error "Genome fasta file not specified with e.g. '--fasta genome.fa' or via a detectable config file."
             System.exit(1)

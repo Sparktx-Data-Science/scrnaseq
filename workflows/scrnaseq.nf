@@ -16,7 +16,6 @@ def checkPathParamList = [
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     CONFIG FILES
@@ -45,6 +44,7 @@ include { STARSOLO          } from '../subworkflows/local/starsolo'
 include { CELLRANGER_ALIGN  } from "../subworkflows/local/align_cellranger"
 include { MTX_CONVERSION    } from "../subworkflows/local/mtx_conversion"
 include { GTF_GENE_FILTER   } from '../modules/local/gtf_gene_filter'
+include { BuildSampleSheet  } from '../modules/local/buildsamplesheet'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
@@ -70,7 +70,7 @@ ch_output_docs_images = file("$projectDir/docs/images/", checkIfExists: true)
 (protocol, chemistry, other_parameters) = WorkflowScrnaseq.formatProtocol(params.protocol, params.aligner)
 
 // general input and params
-ch_input = file(params.input)
+
 ch_genome_fasta = params.fasta ? file(params.fasta) : []
 ch_gtf = params.gtf ? file(params.gtf) : []
 ch_transcript_fasta = params.transcript_fasta ? file(params.transcript_fasta): []
@@ -99,6 +99,30 @@ ch_star_index = params.star_index ? file(params.star_index) : []
 //cellranger params
 ch_cellranger_index = params.cellranger_index ? file(params.cellranger_index) : []
 
+ch_unique_id = params.run_id ? params.run_id : workflow.sessionId 
+params.outdir = "s3://sparkds-datalake-groupdropin-bioinformatics/scrnaseq/${params.unique_id}/"
+ch_report_template = Channel.fromPath("${projectDir}/templates/template_nextflow_report.Rmd")
+ch_sample_report_script = Channel.fromPath("${projectDir}/Rscripts/deploy_nextflow_sample.R")
+footer_ch = Channel.fromPath("${projectDir}/templates/footer.html")
+
+process MakeRmdReport {
+
+    input:
+    path(template)
+    path(samplesheet)
+    path(reportscript)
+    path(footer)
+    val(runid)
+    path(multiqcreport)
+
+    output:
+    path("*.Rmd")
+
+    script:
+    """
+    make_rmd_report.py --template $template --samplesheet $samplesheet --runid $runid --report-script $reportscript --outdir $params.outdir
+    """
+}
 
 workflow SCRNASEQ {
 
@@ -106,6 +130,8 @@ workflow SCRNASEQ {
     ch_mtx_matrices = Channel.empty()
 
     // Check input files and stage input data
+    fastqs_ch = params.reads.split(',').collect()
+    ch_input = BuildSampleSheet(fastqs_ch)
     ch_fastq = INPUT_CHECK( ch_input ).reads
 
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
@@ -221,6 +247,8 @@ workflow SCRNASEQ {
     )
     multiqc_report = MULTIQC.out.report.toList()
     ch_versions    = ch_versions.mix(MULTIQC.out.versions)
+
+    ch_rmd_report = MakeRmdReport(ch_report_template, ch_input, ch_sample_report_script, footer_ch, ch_unique_id, multiqc_report)
 }
 
 /*

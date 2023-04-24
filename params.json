@@ -3,7 +3,7 @@
 	"fasta":"s3://sparktx-nextflow-pipeline/projects/hd-short-read/ref/Homo_sapiens_assembly38.fasta",
 	"aligner":"cellranger",
 	"protocol":"10XV3",
-	"gtf":"/mnt/bfx-ops/projects/2022/scRNA_Imm_Javad/refdata-gex-GRCh38-2020-A/genes/genes.gtf",
+	"gtf":"s3://sparktx-nextflow-pipeline/projects/gtf/genes.gtf",
 	"run_id":"feccc0eb_32ad_4d0f_8ae6_03b5c658f426",
 	"outdir":"s3://sparkds-datalake-groupdropin-bioinformatics/scrnaseq/feccc0eb_32ad_4d0f_8ae6_03b5c658f426/",
 	"public_name": "Nathan's test run"

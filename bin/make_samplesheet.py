@@ -5,8 +5,6 @@ import os
 
 class Sample:
 
-    bucket = "s3://sparkds-device-dropin-rd-1249-nseq/Output/230214_VH00163_33_AAATGMKHV/Analysis/1/Data/fastq/"
-
     @staticmethod
     def get_name(fastq):
         if '_R1' in fastq:
@@ -37,11 +35,12 @@ class Sample:
         elif '_R2' in fastq:
             self.read2 = fastq
         
-    def as_string(self, strandedness):
-        return ','.join([self.name, Sample.bucket + self.read1, Sample.bucket + self.read2, strandedness]) + '\n'
+    def as_string(self, bucket, strandedness):
+        return ','.join([self.name, bucket + '/' + self.read1, bucket + '/' + self.read2, strandedness]) + '\n'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--strandedness', default='auto')
+parser.add_argument('--bucket')
 parser.add_argument('--fastqs', nargs='+')
 parser.add_argument('--output')
 args = parser.parse_args()
@@ -63,4 +62,4 @@ for sample in sampledict.values():
 with open(args.output, 'w') as output:
     output.write(','.join(['sample','fastq_1','fastq_2',args.strandedness]) + '\n')
     for sample in sampledict.values():
-        output.write(sample.as_string(args.strandedness))
+        output.write(sample.as_string(args.bucket, args.strandedness))

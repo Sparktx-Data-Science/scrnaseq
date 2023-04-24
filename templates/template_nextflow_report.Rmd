@@ -33,11 +33,8 @@ basedir <- "/mnt/groupdata/sparkds-datalake-groupdropin-bioinformatics/scrnaseq"
 targetdir <- paste(basedir, sessionId, sep="/")
 
 #Read files
-multiqcReport <- read.delim(paste(targetdir, "/multiqc", "/multiqc_report.html", sep=""))
-```
 
-```{r, echo=FALSE}
-htmltools::includeHTML(multiqcReport)
+multiqcReport <- paste(targetdir, "/multiqc", "/multiqc_report.html", sep="")
 ```
 
 COUNT_HTML_HERE

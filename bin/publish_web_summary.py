@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import argparse
+import glob
 import subprocess
+import sys
 
 def make_count_html(samplenames, outdir):
     outstring = ''
@@ -39,31 +41,14 @@ def addquotes(string):
     return '"' + string + '"'
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--template')
-parser.add_argument('--samplesheet')
+parser.add_argument('--sample')
 parser.add_argument('--report-script')
 parser.add_argument('--runid')
-parser.add_argument('--outdir')
 parser.add_argument('--debug', default=False, action='store_true')
 args = parser.parse_args()
 
-replacedict = {'SESSIONID_HERE': addquotes(args.runid)}
-
-samplenames = []
-with open(args.samplesheet, 'r') as samplesheet:
-    firstline = 1
-    for line in samplesheet:
-        if firstline:
-            firstline = 0
-            continue
-        samplenames.append(line.split(',')[0])
-
-replacedict['COUNT_HTML_HERE'] = make_count_html(samplenames, args.outdir)
-
-replace_in_file(args.template, "report.Rmd", replacedict)
-
 deployproc = subprocess.run(['Rscript', args.report_script,
-        '--run', args.runid.replace('.', '_').replace('-', '_'), "--rmdfile", "report.Rmd"], capture_output=True)
+    '--appname', args.runid.replace('.', '_').replace('-', '_') + '_' + args.sample, "--document", "web_summary.html"], capture_output=True)
 
 if args.debug:
     print(deployproc.stdout.decode())
@@ -72,4 +57,4 @@ url = get_deployment_url(deployproc.stdout.decode())
 if not url:
     raise RuntimeError('Deployment failed for %s' % args.runid)
 else:
-    print("Report deployed to %s" % url)
+    print(url, end="")

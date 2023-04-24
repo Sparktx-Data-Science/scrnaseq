@@ -102,25 +102,57 @@ ch_cellranger_index = params.cellranger_index ? file(params.cellranger_index) : 
 ch_unique_id = params.run_id ? params.run_id : workflow.sessionId 
 params.outdir = "s3://sparkds-datalake-groupdropin-bioinformatics/scrnaseq/${params.unique_id}/"
 ch_report_template = Channel.fromPath("${projectDir}/templates/template_nextflow_report.Rmd")
+ch_html_publish_script = Channel.fromPath("${projectDir}/Rscripts/deploy_html.R")
 ch_sample_report_script = Channel.fromPath("${projectDir}/Rscripts/deploy_nextflow_sample.R")
 footer_ch = Channel.fromPath("${projectDir}/templates/footer.html")
 
+process PublishWebSummary {
+    input:
+    path(reportscript)
+    val(runid)
+    tuple(val(samplename), path(html))
+
+    output:
+    stdout
+
+    script:
+    """
+    publish_web_summary.py --sample $samplename --report-script $reportscript --runid $runid
+    """
+}
+
 process MakeRmdReport {
+    secret 'RSTUDIO_CONNECT_API_USER'
+    secret 'RSTUDIO_CONNECT_API_KEY'
+    stageInMode 'copy'
+    container "125195589298.dkr.ecr.us-east-2.amazonaws.com/cbml-hd-short-read-report-runner:v0.1.3"
 
     input:
-    path(template)
-    path(samplesheet)
     path(reportscript)
-    path(footer)
     val(runid)
     path(multiqcreport)
+    val(urls)
 
     output:
     path("*.Rmd")
 
     script:
     """
-    make_rmd_report.py --template $template --samplesheet $samplesheet --runid $runid --report-script $reportscript --outdir $params.outdir
+    export API_USER=\$RSTUDIO_CONNECT_API_USER && export API_KEY=\$RSTUDIO_CONNECT_API_KEY
+    publish_html.py --publicid "$params.public_name" --runid $runid --report-script $reportscript --urls ${urls.join(" ")} --debug
+    """
+}
+
+process GetBucket {
+    input:
+    val(fastq)
+
+    output:
+    stdout
+
+    script:
+    """
+    dirname ${fastq[0]} | tr -d '\\n'
     """
 }
 
@@ -130,8 +162,12 @@ workflow SCRNASEQ {
     ch_mtx_matrices = Channel.empty()
 
     // Check input files and stage input data
+    fastq_string_ch = params.reads.split(',')
+    bucket_ch = GetBucket(fastq_string_ch)
+    bucket_ch.view()
     fastqs_ch = params.reads.split(',').collect()
-    ch_input = BuildSampleSheet(fastqs_ch)
+    print(fastqs_ch)
+    ch_input = BuildSampleSheet(fastqs_ch, bucket_ch)
     ch_fastq = INPUT_CHECK( ch_input ).reads
 
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
@@ -248,7 +284,8 @@ workflow SCRNASEQ {
     multiqc_report = MULTIQC.out.report.toList()
     ch_versions    = ch_versions.mix(MULTIQC.out.versions)
 
-    ch_rmd_report = MakeRmdReport(ch_report_template, ch_input, ch_sample_report_script, footer_ch, ch_unique_id, multiqc_report)
+    ch_websummary_urls = PublishWebSummary(ch_html_publish_script.first(), ch_unique_id, CELLRANGER_ALIGN.out.cellranger_html)
+    ch_rmd_report = MakeRmdReport(ch_html_publish_script.first(), ch_unique_id, multiqc_report, ch_websummary_urls.collect())
 }
 
 /*

@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
+import glob
 import subprocess
+import sys
 
 def make_count_html(samplenames, outdir):
     outstring = ''
@@ -39,35 +41,31 @@ def addquotes(string):
     return '"' + string + '"'
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--template')
-parser.add_argument('--samplesheet')
 parser.add_argument('--report-script')
 parser.add_argument('--runid')
-parser.add_argument('--outdir')
+parser.add_argument('--publicid')
+parser.add_argument('--urls', nargs='*')
 parser.add_argument('--debug', default=False, action='store_true')
 args = parser.parse_args()
 
-replacedict = {'SESSIONID_HERE': addquotes(args.runid)}
-
-samplenames = []
-with open(args.samplesheet, 'r') as samplesheet:
-    firstline = 1
-    for line in samplesheet:
-        if firstline:
-            firstline = 0
-            continue
-        samplenames.append(line.split(',')[0])
-
-replacedict['COUNT_HTML_HERE'] = make_count_html(samplenames, args.outdir)
-
-replace_in_file(args.template, "report.Rmd", replacedict)
-
 deployproc = subprocess.run(['Rscript', args.report_script,
-        '--run', args.runid.replace('.', '_').replace('-', '_'), "--rmdfile", "report.Rmd"], capture_output=True)
+        '--appname', args.runid.replace('.', '_').replace('-', '_') + '_multiqc', '--document', 'multiqc_report.html'], capture_output=True)
 
 if args.debug:
     print(deployproc.stdout.decode())
     print(deployproc.stderr.decode())
+multiqc_url = get_deployment_url(deployproc.stdout.decode())
+if not multiqc_url:
+    raise RuntimeError('Deployment failed for %s' % args.runid)
+
+with open('tmp.Rmd', 'w') as tmp:
+    tmp.write('---\ntitle: %s\n---\n\n' % args.publicid)
+    for index, url in enumerate(args.urls):
+        tmp.write('* [Sample %s](%s)\n' % (index, url))
+    tmp.write('* [MultiQC report](%s)\n' % multiqc_url)
+
+deployproc = subprocess.run(['Rscript', args.report_script,
+        '--appname', 'scrnaseq_' + args.runid.replace('.', '_').replace('-', '_'), '--document', 'tmp.Rmd'], capture_output=True)
 url = get_deployment_url(deployproc.stdout.decode())
 if not url:
     raise RuntimeError('Deployment failed for %s' % args.runid)

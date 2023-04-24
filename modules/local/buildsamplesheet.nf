@@ -1,4 +1,5 @@
 process BuildSampleSheet {
+    container "125195589298.dkr.ecr.us-east-2.amazonaws.com/cbml-pandas:v1"
 
     input:
     path(fastqs)

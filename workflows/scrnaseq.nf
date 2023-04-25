@@ -107,6 +107,9 @@ ch_sample_report_script = Channel.fromPath("${projectDir}/Rscripts/deploy_nextfl
 footer_ch = Channel.fromPath("${projectDir}/templates/footer.html")
 
 process PublishWebSummary {
+    secret 'RSTUDIO_CONNECT_API_USER'
+    secret 'RSTUDIO_CONNECT_API_KEY'
+    stageInMode 'copy'
     container "125195589298.dkr.ecr.us-east-2.amazonaws.com/cbml-hd-short-read-report-runner:v0.1.3"
 
     input:

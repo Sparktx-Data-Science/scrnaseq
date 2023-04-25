@@ -119,7 +119,7 @@ process PublishWebSummary {
 
     script:
     """
-    publish_web_summary.py --sample $samplename --report-script $reportscript --runid $runid
+    publish_web_summary.py --sample $samplename --report-script $reportscript --runid $runid --debug
     """
 }
 

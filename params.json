@@ -1,0 +1,10 @@
+{
+	"reads":"s3://sparkds-device-lts-rd-1249-nseq/Output/230214_VH00163_33_AAATGMKHV/Analysis/1/Data/fastq/S1000_whole_S1_R1_001.fastq.gz,s3://sparkds-device-lts-rd-1249-nseq/Output/230214_VH00163_33_AAATGMKHV/Analysis/1/Data/fastq/S1000_whole_S1_R2_001.fastq.gz,s3://sparkds-device-lts-rd-1249-nseq/Output/230214_VH00163_33_AAATGMKHV/Analysis/1/Data/fastq/S100_whole_S3_R1_001.fastq.gz,s3://sparkds-device-lts-rd-1249-nseq/Output/230214_VH00163_33_AAATGMKHV/Analysis/1/Data/fastq/S100_whole_S3_R2_001.fastq.gz",
+	"fasta":"s3://sparktx-nextflow-pipeline/projects/hd-short-read/ref/Homo_sapiens_assembly38.fasta",
+	"aligner":"cellranger",
+	"protocol":"10XV3",
+	"gtf":"s3://sparktx-nextflow-pipeline/projects/gtf/genes.gtf",
+	"run_id":"feccc0eb_32ad_4d0f_8ae6_03b5c658f426",
+	"outdir":"s3://sparkds-datalake-groupdropin-bioinformatics/scrnaseq/feccc0eb_32ad_4d0f_8ae6_03b5c658f426/",
+	"public_name": "Nathan's test run"
+}

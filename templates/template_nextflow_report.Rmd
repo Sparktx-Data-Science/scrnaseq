@@ -1,0 +1,40 @@
+---
+title: "Single-cell RNA - Dynamic Report"
+runtime: shiny
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+    theme: united
+    highlight: espresso
+    includes:
+      after_body: footer.html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, dev = "png", dev.args = list(type = "cairo-png"))
+#Install plotly as follows - https://plotly.com/ggplot2/getting-started/
+#Call libraries
+#library("shiny")
+#library("DT")
+#library("ggplot2")
+#library("plotly")
+#library("jsonlite")
+#library("yaml")
+#library("dplyr")
+#library("downloadthis")
+#library("stringr")
+
+sessionId <- SESSIONID_HERE
+basedir <- "/mnt/groupdata/sparkds-datalake-groupdropin-bioinformatics/scrnaseq"
+targetdir <- paste(basedir, sessionId, sep="/")
+
+#Read files
+
+multiqcReport <- paste(targetdir, "/multiqc", "/multiqc_report.html", sep="")
+```
+
+COUNT_HTML_HERE

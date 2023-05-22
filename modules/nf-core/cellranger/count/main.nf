@@ -14,6 +14,7 @@ process CELLRANGER_COUNT {
     output:
     tuple val(meta), path("sample-${meta.gem}/outs/*"), emit: outs
     path "versions.yml"                               , emit: versions
+    tuple val("${meta.gem}"), path("sample-${meta.gem}/outs/*.html")             , emit: websummaries
 
     when:
     task.ext.when == null || task.ext.when

@@ -168,10 +168,9 @@ workflow SCRNASEQ {
     ch_mtx_matrices = Channel.empty()
 
     // Check input files and stage input data
-    fastq_string_ch = Channel.fromList(params.reads)
+    fastq_string_ch = Channel.fromList(params.reads).collect()
     bucket_ch = GetBucket(fastq_string_ch)
-    fastqs_ch = fastq_string_ch.collect()
-    ch_input = BuildSampleSheet(fastqs_ch, bucket_ch)
+    ch_input = BuildSampleSheet(fastq_string_ch, bucket_ch)
     ch_fastq = INPUT_CHECK( ch_input ).reads
 
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)

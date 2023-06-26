@@ -1,7 +1,7 @@
 ---
 scrnaseq:
   label: "Single-cell RNA processing"
-  version: "v1.0.0rc7"
+  version: "v1.0.0rc8"
   description: "MultiQC and sample HTML reports"
   workspace_id: "236559192150132"
   compute_env_id: "uEC2MMC1WSJaolYipyNpG"

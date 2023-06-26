@@ -123,7 +123,7 @@ process PublishWebSummary {
     script:
     """
     export API_USER=\$RSTUDIO_CONNECT_API_USER && export API_KEY=\$RSTUDIO_CONNECT_API_KEY
-    publish_web_summary.py --sample $samplename --report-script $reportscript --runid $runid --debug
+    publish_web_summary.py --sample $samplename --report-script $reportscript --runid $runid
     """
 }
 

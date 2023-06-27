@@ -32,6 +32,7 @@ def create_fastq_channel(LinkedHashMap row) {
 
     // add path(s) of the fastq file(s) to the meta map
     def fastq_meta = []
+    print(row.fastq_1)
     if (!file(row.fastq_1).exists()) {
         exit 1, "ERROR: Please check input samplesheet -> Read 1 FastQ file does not exist!\n${row.fastq_1}"
     }

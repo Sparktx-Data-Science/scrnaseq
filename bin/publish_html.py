@@ -43,6 +43,7 @@ def addquotes(string):
 parser = argparse.ArgumentParser()
 parser.add_argument('--report-script')
 parser.add_argument('--runid')
+parser.add_argument('--version')
 parser.add_argument('--publicid')
 parser.add_argument('--urls', nargs='*')
 parser.add_argument('--debug', default=False, action='store_true')
@@ -60,9 +61,13 @@ if not multiqc_url:
 
 with open('tmp.Rmd', 'w') as tmp:
     tmp.write('---\ntitle: %s\n---\n\n' % args.publicid)
-    for index, url in enumerate(args.urls):
-        tmp.write('* [Sample %s](%s)\n' % (index, url))
+    for url in args.urls:
+        with open(url, 'r') as urlfile:
+            for line in urlfile:
+                sample, url = line.rstrip().split('\t')
+        tmp.write('* [Sample %s](%s)\n' % (sample, url))
     tmp.write('* [MultiQC report](%s)\n' % multiqc_url)
+    tmp.write('Workflow outputs at s3://sparkds-nextflow-outputs-production/single-cell-rna-processing/%s/%s/\n' % (args.version, args.runid))
 
 deployproc = subprocess.run(['Rscript', args.report_script,
         '--appname', 'scrnaseq_' + args.runid.replace('.', '_').replace('-', '_'), '--document', 'tmp.Rmd'], capture_output=True)

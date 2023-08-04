@@ -118,7 +118,7 @@ process PublishWebSummary {
     tuple(val(samplename), path(html))
 
     output:
-    stdout
+    path("*urls.txt")
 
     script:
     """
@@ -145,7 +145,7 @@ process MakeRmdReport {
     script:
     """
     export API_USER=\$RSTUDIO_CONNECT_API_USER && export API_KEY=\$RSTUDIO_CONNECT_API_KEY
-    publish_html.py --publicid "$params.run" --runid $runid --report-script $reportscript --urls ${urls.join(" ")} --debug
+    publish_html.py --publicid "$params.run" --version "$params.VERSION" --runid $runid --report-script $reportscript --urls ${urls.join(" ")} --debug
     """
 }
 

@@ -66,7 +66,7 @@ with open('tmp.Rmd', 'w') as tmp:
             for line in urlfile:
                 sample, url = line.rstrip().split('\t')
         tmp.write('* [Sample %s](%s)\n' % (sample, url))
-    tmp.write('* [MultiQC report](%s)\n' % multiqc_url)
+    tmp.write('* [MultiQC report](%s)\\\n' % multiqc_url)
     tmp.write('Workflow outputs at s3://sparkds-nextflow-outputs-production/single-cell-rna-processing/%s/%s/\\\n' % (args.version, args.runid))
 
 deployproc = subprocess.run(['Rscript', args.report_script,

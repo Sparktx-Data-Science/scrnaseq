@@ -67,7 +67,7 @@ with open('tmp.Rmd', 'w') as tmp:
                 sample, url = line.rstrip().split('\t')
         tmp.write('* [Sample %s](%s)\n' % (sample, url))
     tmp.write('* [MultiQC report](%s)\n' % multiqc_url)
-    tmp.write('Workflow outputs at s3://sparkds-nextflow-outputs-production/single-cell-rna-processing/%s/%s/\n' % (args.version, args.runid))
+    tmp.write('Workflow outputs at s3://sparkds-nextflow-outputs-production/single-cell-rna-processing/%s/%s/\\\n' % (args.version, args.runid))
 
 deployproc = subprocess.run(['Rscript', args.report_script,
         '--appname', 'scrnaseq_' + args.runid.replace('.', '_').replace('-', '_'), '--document', 'tmp.Rmd'], capture_output=True)

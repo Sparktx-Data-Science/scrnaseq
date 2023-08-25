@@ -290,8 +290,10 @@ workflow SCRNASEQ {
     multiqc_report = MULTIQC.out.report.toList()
     ch_versions    = ch_versions.mix(MULTIQC.out.versions)
 
+    if (params.aligner == "cellranger") {
     ch_websummary_urls = PublishWebSummary(ch_html_publish_script.first(), ch_unique_id, CELLRANGER_ALIGN.out.cellranger_html)
     ch_rmd_report = MakeRmdReport(ch_html_publish_script.first(), ch_unique_id, multiqc_report, ch_websummary_urls.collect())
+    }
 }
 
 /*

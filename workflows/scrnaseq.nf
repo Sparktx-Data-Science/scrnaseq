@@ -63,6 +63,9 @@ include { MULTIQC } from "../modules/nf-core/multiqc/main"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+params.aligner = "cellranger"
+params.protocol = ""
+
 // Info required for completion email and summary
 // TODO: Are this channels still necessary?
 ch_output_docs = file("$projectDir/docs/output.md", checkIfExists: true)

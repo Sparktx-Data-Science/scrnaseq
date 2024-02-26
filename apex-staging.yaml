@@ -32,3 +32,5 @@ scrnaseq:
     min_variant_freq: ""
     variant_maxdepth: ""
     min_variant_baseq: ""
+  details:
+    is_multi_sample: true

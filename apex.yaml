@@ -1,15 +1,16 @@
 ---
-scrnaseq:
+single-cell-rna-processing:
   label: "Single-cell RNA processing"
   version: "v1.0.1"
   description: "MultiQC and sample HTML reports"
   workspace_id: "115437722032750"
-  compute_env_id: "1SepHXjkNIFllfRsNfVTsH"
+  compute_env_id: "3lTj4GMJqUUufmVb9rPjP0"
   workspace_secrets:
     - "RSTUDIO_CONNECT_API_KEY"
     - "RSTUDIO_CONNECT_API_USER"
   pipeline_admins:
-    - "nathan.johnson@sparktx.com"
+    - "perry.evans@roche.com"
+    - "adam.gleason@roche.com"
   output_bucket: "sparkds-nextflow-outputs-production"
   default_parameters:
     aligner: "cellranger"

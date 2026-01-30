@@ -9,7 +9,8 @@ scrnaseq:
     - "RSTUDIO_CONNECT_API_KEY"
     - "RSTUDIO_CONNECT_API_USER"
   pipeline_admins:
-    - "nathan.johnson@sparktx.com"
+    - "adam.gleason@roche.com"
+    - "perry.evans@roche.com"
   output_bucket: "sparkds-nextflow-outputs-production"
   default_parameters:
     aligner: "cellranger"

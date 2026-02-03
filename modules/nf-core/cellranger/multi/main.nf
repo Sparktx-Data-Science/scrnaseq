@@ -114,7 +114,9 @@ process CELLRANGER_MULTI {
     gex_options_no_bam        = gex_options_use && meta_gex.options.containsKey("create-bam")    ? "create-bam,${meta_gex.options["create-bam"]}"           : ''
     gex_options_no_target_umi_filter = gex_options_use && meta_gex.options.containsKey("no-target-umi-filter") ? "no-target-umi-filter,${meta_gex.options["no-target-umi-filter"]}" : ''
     gex_options_include_introns      = gex_options_use && meta_gex.options.containsKey("include-introns")      ? "include-introns,${meta_gex.options["include-introns"]}"           : ''
-    gex_options_check_library_compatibility = gex_options_use && meta_gex.options.containsKey("check-library-compatibility") ? "check-library-compatibility,${meta_gex.options["check-library-compatibility"]}" : ''
+    // gex_options_check_library_compatibility = gex_options_use && meta_gex.options.containsKey("check-library-compatibility") ? "check-library-compatibility,${meta_gex.options["check-library-compatibility"]}" : ''
+    gex_options_check_library_compatibility = include_gex ? ( meta_gex?.options?.containsKey("check-library-compatibility") ? "check-library-compatibility,${meta_gex.options["check-library-compatibility"]}" : 'check-library-compatibility,false' ) : ''
+
 
     cmo_reference_path = cmo_options_use && cmo_reference_name    ? "cmo-set,./${cmo_reference_name}"                      : ''
     cmo_barcode_path   = cmo_options_use && cmo_sample_assignment ? "barcode-sample-assignment,./${cmo_sample_assignment}" : ''
